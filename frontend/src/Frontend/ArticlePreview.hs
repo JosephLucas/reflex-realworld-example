@@ -54,9 +54,7 @@ articlePreview
 articlePreview articleDyn = elClass "div" "article-preview" $ do
   elClass "div" "article-meta" $ do
     let profileDyn = Article.author <$> articleDyn
-    let userRouteDyn = (\p ->
-          (FrontendRoute_Profile :/ (Username . Profile.username $ p,Nothing))
-         ) <$> profileDyn
+    let userRouteDyn = profileRoute <$> profileDyn
     routeLinkDyn userRouteDyn $ profileImage "" (Profile.image <$> profileDyn)
     elClass "div" "info" $ do
       routeLinkDynClass (constDyn "author") userRouteDyn $ dynText (Profile.username <$> profileDyn)
@@ -75,7 +73,7 @@ articlePreview articleDyn = elClass "div" "article-preview" $ do
 profileRoute
   :: Profile.Profile
   -> (R FrontendRoute)
-profileRoute p = FrontendRoute_Profile :/ (Username (Profile.username p), Nothing)
+profileRoute p = FrontendRoute_Profile :/ (Username . Profile.username $ p,Nothing)
 
 profileImage
   :: ( DomBuilder t m
