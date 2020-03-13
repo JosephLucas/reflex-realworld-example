@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.12
--- Dumped by pg_dump version 9.6.12
+-- Dumped from database version 9.6.13
+-- Dumped by pg_dump version 11.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,22 +12,31 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: conduit; Type: DATABASE; Schema: -; Owner: conduit
 --
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+CREATE DATABASE conduit WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
 
 
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
+ALTER DATABASE conduit OWNER TO conduit;
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+\connect conduit
 
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
 SET default_tablespace = '';
 
@@ -219,8 +228,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.article_tags (article__id, tag__name) FROM stdin;
-3	parties
-4	being cool
+3	sciences
+4	arts
 \.
 
 
@@ -229,16 +238,9 @@ COPY public.article_tags (article__id, tag__name) FROM stdin;
 --
 
 COPY public.articles (id, body, slug, title, description, author__id, created_at, updated_at) FROM stdin;
-3	# Things that you will need\n\n- Cake\n- Party Cannon	how-to-throw-an-awesome-party	How to Throw an Awesome Party!	Party organising techniques	7	2019-05-07 23:48:45.982494+00	2019-05-07 23:48:45.982494+00
-4	TODO	how-to-become-at-least-20-cooler	How to become (at least) 20% Cooler	Being Cool	5	2019-05-07 23:51:44.856755+00	2019-05-07 23:51:44.856755+00
+3	Here are the reasons why this article is so interesting. Developping these reasons might be tricky when the aim of the article is just to show that it has content.	an-article-about-sharing-ideas	An article about sharing ideas	sharing ideas	7	2019-05-07 23:48:45.982494+00	2019-05-07 23:48:45.982494+00
+4	This information might be useful for this reason. I also wnat to share an argument that shows how you can make life easier for you and others.	how-to-make-life-easier	How to make life easier	easier life	5	2019-05-07 23:51:44.856755+00	2019-05-07 23:51:44.856755+00
 \.
-
-
---
--- Name: articles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: conduit
---
-
-SELECT pg_catalog.setval('public.articles_id_seq', 4, true);
 
 
 --
@@ -246,16 +248,9 @@ SELECT pg_catalog.setval('public.articles_id_seq', 4, true);
 --
 
 COPY public.comments (id, body, author__id, article__id, created_at, updated_at) FROM stdin;
-4	This article is still not finished. Please remember to finish it off soon. :)	6	4	2019-05-12 15:25:21.996366+00	2019-05-12 15:25:21.996366+00
-5	Oh yeah... Will do, thanks! 	5	4	2019-05-12 15:26:17.483094+00	2019-05-12 15:26:17.483094+00
+4	Thanks for sharing these ideas !	6	4	2019-05-12 15:25:21.996366+00	2019-05-12 15:25:21.996366+00
+5	Oh, now I know how to do it. Thanks, Can you develop a bit more about that ?	7	4	2019-05-12 15:26:17.483094+00	2019-05-12 15:26:17.483094+00
 \.
-
-
---
--- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: conduit
---
-
-SELECT pg_catalog.setval('public.comments_id_seq', 5, true);
 
 
 --
@@ -282,8 +277,8 @@ COPY public.follows (follower__id, followee__id) FROM stdin;
 --
 
 COPY public.tags (name) FROM stdin;
-parties
-being cool
+sciences
+arts
 \.
 
 
@@ -292,10 +287,24 @@ being cool
 --
 
 COPY public.users (id, password, email, username, bio, image) FROM stdin;
-5	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	dashy@mlp	Dashy	Ponyville weather control expert & Trainee Wonderbolt!	/static/avatars/dashy.png
-7	14|8|1|uyRA6mhsCBcVPywd8F1Jsqe8BE4bVgIthD5NwLhXCgw=|7+5+h+9OKFb68D1zvmnUkmQ0q7liuLwfKz1TCH07DBe7BH7Za9wQ65iSs8Peedfi0i6PgWrXAtqrCsnON83+zQ==	pinkiepie@mlp	PinkiePie	Loves to throw parties!	/static/avatars/pinkie.png
-6	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	fluttershy@mlp	Fluttershy		/static/avatars/fluttershy.png
+7	14|8|1|uyRA6mhsCBcVPywd8F1Jsqe8BE4bVgIthD5NwLhXCgw=|7+5+h+9OKFb68D1zvmnUkmQ0q7liuLwfKz1TCH07DBe7BH7Za9wQ65iSs8Peedfi0i6PgWrXAtqrCsnON83+zQ==	john@mlp	John	I am a kind person. I am interested about improving well-being	/static/avatars/john.png
+6	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	tom@mlp	Tom	I would like to share ideas	/static/avatars/tom.png
+5	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	mary@mlp	Mary	Hey ! I am Mary :)	/static/avatars/mary.png
 \.
+
+
+--
+-- Name: articles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: conduit
+--
+
+SELECT pg_catalog.setval('public.articles_id_seq', 4, true);
+
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: conduit
+--
+
+SELECT pg_catalog.setval('public.comments_id_seq', 5, true);
 
 
 --
